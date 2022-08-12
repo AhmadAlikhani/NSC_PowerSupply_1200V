@@ -1,0 +1,7 @@
+
+*.o
+*.mk
+*.d
+*/Debug/*
+*.su
+*.list

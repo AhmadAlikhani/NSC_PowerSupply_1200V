@@ -44,7 +44,7 @@ extern uint32_t ADC_Buffer[5];
 * @retval None
 */
 /* USER CODE END Header_ADC_Caculation */
-void ADC_Caculation(void const * argument)
+void ADC_CaculationFunc(void)
 {
   /* USER CODE BEGIN ADC_Caculation */
   /* Infinite loop */

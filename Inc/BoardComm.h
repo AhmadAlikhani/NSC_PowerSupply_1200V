@@ -4,7 +4,7 @@
 #include "stdint.h"
 #include "cmsis_os.h"
 
-void BoardComm(void const * argument);
+void BoardCommFunc(void);
 
 
 #endif /*BOARDCOMM_HANDLE_DEFINE*/

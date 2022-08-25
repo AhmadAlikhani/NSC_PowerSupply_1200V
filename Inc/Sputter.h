@@ -1,6 +1,6 @@
 #ifndef SPUTTER_HANDLE_DEFINE
 #define SPUTTER_HANDLE_DEFINE
 
-void Sputter(void const * argument);
+void SputterFunc(void);
 
 #endif /*SPUTTER_HANDLE_DEFINE*/

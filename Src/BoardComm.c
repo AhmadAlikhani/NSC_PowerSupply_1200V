@@ -29,7 +29,7 @@ float Setpoint_Limit_Coefficient_V = 1;//0.6258;//0.6243;//0.5626; //DAC-SP=(Nex
 * @retval None
 */
 /* USER CODE END Header_BoardComm */
-void BoardComm(void const * argument)
+void BoardCommFunc(void)
 {
   /* USER CODE BEGIN BoardComm */
   /* Infinite loop */
@@ -41,10 +41,8 @@ void BoardComm(void const * argument)
 		HMI_Current_Setpoint=	(buffer_usart[1]-48)*1000 + (buffer_usart[2]-48)*100 +(buffer_usart[3]-48)*10 +(buffer_usart[4]-48)*1	;
 		HMI_Voltage_Setpoint=	(buffer_usart[5]-48)*1000 + (buffer_usart[6]-48)*100 +(buffer_usart[7]-48)*10 +(buffer_usart[8]-48)*1	;
 		Arc_Level			=	(buffer_usart[9]-48)*1000 + (buffer_usart[10]-48)*100 +(buffer_usart[11]-48)*10 +(buffer_usart[12]-48)*1	;
-		Quanch_Time			=	(buffer_usart[13]-48)*1000 + (buffer_usart[14]-48)*100 +(buffer_usart[15]-48)*10 +(buffer_usart[16]-48)*1	;
+		Quanch_Time			=	(((buffer_usart[13]-48)*1000 + (buffer_usart[14]-48)*100 +(buffer_usart[15]-48)*10 +(buffer_usart[16]-48)*1	) < 5000 ) ? ((buffer_usart[13]-48)*1000 + (buffer_usart[14]-48)*100 +(buffer_usart[15]-48)*10 +(buffer_usart[16]-48)*1) : Quanch_Time;
 
-		if(Quanch_Time > 5000)
-			Quanch_Time = 0;
 
 		//---------- Calcultaion of Setpoint Limit ------------//
 		Setpoint_Limit_Current = (uint32_t)((HMI_Current_Setpoint*Setpoint_Limit_Coefficient_C) - Setpoint_Limit_Offset_C1);

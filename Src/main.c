@@ -47,7 +47,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
+ ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 CRC_HandleTypeDef hcrc;
@@ -57,10 +57,34 @@ DAC_HandleTypeDef hdac2;
 
 UART_HandleTypeDef huart2;
 
-osThreadId defaultTaskHandle;
-osThreadId BoardCommTaskHandle;
-osThreadId SputterTaskHandle;
-osThreadId ADC_Caculation_Handle;
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for BoardCommTask */
+osThreadId_t BoardCommTaskHandle;
+const osThreadAttr_t BoardCommTask_attributes = {
+  .name = "BoardCommTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for SputterTask */
+osThreadId_t SputterTaskHandle;
+const osThreadAttr_t SputterTask_attributes = {
+  .name = "SputterTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for ADC_Caculation_ */
+osThreadId_t ADC_Caculation_Handle;
+const osThreadAttr_t ADC_Caculation__attributes = {
+  .name = "ADC_Caculation_",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* USER CODE BEGIN PV */
 
 uint32_t ADC_Calibration_Factor;
@@ -83,7 +107,11 @@ static void MX_DAC1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_DAC2_Init(void);
-void StartDefaultTask(void const * argument);
+void StartDefaultTask(void *argument);
+void BoardComm(void *argument);
+void Sputter(void *argument);
+void ADC_Caculation(void *argument);
+
 /* USER CODE BEGIN PFP */
 void i2s(unsigned long int ,char str[5]);                // Integer to string data conversion
 
@@ -147,6 +175,9 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -164,25 +195,25 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* definition and creation of BoardCommTask */
-  osThreadDef(BoardCommTask, BoardComm, osPriorityNormal, 0, 128);
-  BoardCommTaskHandle = osThreadCreate(osThread(BoardCommTask), NULL);
+  /* creation of BoardCommTask */
+  BoardCommTaskHandle = osThreadNew(BoardComm, NULL, &BoardCommTask_attributes);
 
-  /* definition and creation of SputterTask */
-  osThreadDef(SputterTask, Sputter, osPriorityNormal, 0, 128);
-  SputterTaskHandle = osThreadCreate(osThread(SputterTask), NULL);
+  /* creation of SputterTask */
+  SputterTaskHandle = osThreadNew(Sputter, NULL, &SputterTask_attributes);
 
-  /* definition and creation of ADC_Caculation_ */
-  osThreadDef(ADC_Caculation_, ADC_Caculation, osPriorityNormal, 0, 128);
-  ADC_Caculation_Handle = osThreadCreate(osThread(ADC_Caculation_), NULL);
+  /* creation of ADC_Caculation_ */
+  ADC_Caculation_Handle = osThreadNew(ADC_Caculation, NULL, &ADC_Caculation__attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
   osKernelStart();
@@ -192,8 +223,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    /* USER CODE END WHILE */
 
-	  
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -483,7 +515,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 }
@@ -571,7 +603,7 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -581,6 +613,72 @@ void StartDefaultTask(void const * argument)
   }
   /* USER CODE END 5 */
 }
+
+/* USER CODE BEGIN Header_BoardComm */
+/**
+* @brief Function implementing the BoardCommTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_BoardComm */
+void BoardComm(void *argument)
+{
+  /* USER CODE BEGIN BoardComm */
+	 BoardCommFunc();
+  /* USER CODE END BoardComm */
+}
+
+/* USER CODE BEGIN Header_Sputter */
+/**
+* @brief Function implementing the SputterTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Sputter */
+void Sputter(void *argument)
+{
+  /* USER CODE BEGIN Sputter */
+  /* Infinite loop */
+	SputterFunc();
+  /* USER CODE END Sputter */
+}
+
+/* USER CODE BEGIN Header_ADC_Caculation */
+/**
+* @brief Function implementing the ADC_Caculation_ thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_ADC_Caculation */
+void ADC_Caculation(void *argument)
+{
+  /* USER CODE BEGIN ADC_Caculation */
+  /* Infinite loop */
+	ADC_CaculationFunc();
+  /* USER CODE END ADC_Caculation */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM6 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM6) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
+
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None

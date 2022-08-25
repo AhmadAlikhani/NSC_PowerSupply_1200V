@@ -49,7 +49,7 @@ extern DAC_HandleTypeDef hdac2;
 * @retval None
 */
 /* USER CODE END Header_Sputter */
-void Sputter(void const * argument)
+void SputterFunc(void)
 {
   /* USER CODE BEGIN Sputter */
   /* Infinite loop */

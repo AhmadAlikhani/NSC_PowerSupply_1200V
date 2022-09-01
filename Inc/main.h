@@ -88,8 +88,9 @@ void Error_Handler(void);
 #define GPIO_OUTPUT_Relay_Inrush_GPIO_Port GPIOB
 #define GPIO_OUTPUT_PFC_EN_Pin GPIO_PIN_15
 #define GPIO_OUTPUT_PFC_EN_GPIO_Port GPIOB
-#define GPIO_INPUT_TACHO2_Pin GPIO_PIN_6
-#define GPIO_INPUT_TACHO2_GPIO_Port GPIOC
+#define GPIO_EXTI6_Tacho2_Pin GPIO_PIN_6
+#define GPIO_EXTI6_Tacho2_GPIO_Port GPIOC
+#define GPIO_EXTI6_Tacho2_EXTI_IRQn EXTI9_5_IRQn
 #define GPIO_OUTPUT_Relay_AC_Pin GPIO_PIN_7
 #define GPIO_OUTPUT_Relay_AC_GPIO_Port GPIOC
 #define GPIO_INPUT_MCU_DCLINK_OK_Pin GPIO_PIN_8

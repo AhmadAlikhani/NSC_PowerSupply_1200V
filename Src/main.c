@@ -55,6 +55,8 @@ CRC_HandleTypeDef hcrc;
 DAC_HandleTypeDef hdac1;
 DAC_HandleTypeDef hdac2;
 
+TIM_HandleTypeDef htim1;
+
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
@@ -69,21 +71,21 @@ osThreadId_t BoardCommTaskHandle;
 const osThreadAttr_t BoardCommTask_attributes = {
   .name = "BoardCommTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityRealtime6,
 };
 /* Definitions for SputterTask */
 osThreadId_t SputterTaskHandle;
 const osThreadAttr_t SputterTask_attributes = {
   .name = "SputterTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityRealtime7,
 };
 /* Definitions for ADC_Caculation_ */
 osThreadId_t ADC_Caculation_Handle;
 const osThreadAttr_t ADC_Caculation__attributes = {
   .name = "ADC_Caculation_",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityRealtime5,
 };
 /* USER CODE BEGIN PV */
 
@@ -107,6 +109,7 @@ static void MX_DAC1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_DAC2_Init(void);
+static void MX_TIM1_Init(void);
 void StartDefaultTask(void *argument);
 void BoardComm(void *argument);
 void Sputter(void *argument);
@@ -156,6 +159,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_CRC_Init();
   MX_DAC2_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 	HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 	HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
@@ -167,6 +171,7 @@ int main(void)
 	ADC_Calibration_Factor = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
 	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, ADC_Calibration_Factor);
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) ADC_Buffer, 3);
+	HAL_TIM_Base_Start_IT(&htim1);
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);							// DE/RE = 0 ----> ADM485 is in recieve mode
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_15,GPIO_PIN_SET);							// Disable PFC
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);								// MCU active
@@ -267,8 +272,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_TIM1|RCC_PERIPHCLK_ADC12;
   PeriphClkInit.Adc12ClockSelection = RCC_ADC12PLLCLK_DIV1;
+  PeriphClkInit.Tim1ClockSelection = RCC_TIM1CLK_HCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -470,6 +476,53 @@ static void MX_DAC2_Init(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 32000;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 2000;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -546,11 +599,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_OUTPUT_Relay_AC_Pin|GPIO_PIN_8, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : GPIO_INPUT_Hiccup_Pin GPIO_INPUT_TACHO2_Pin */
-  GPIO_InitStruct.Pin = GPIO_INPUT_Hiccup_Pin|GPIO_INPUT_TACHO2_Pin;
+  /*Configure GPIO pin : GPIO_INPUT_Hiccup_Pin */
+  GPIO_InitStruct.Pin = GPIO_INPUT_Hiccup_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIO_INPUT_Hiccup_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : GPIO_OUTPUT_Enable_MCU_Pin GPIO_OUTPUT_Fan_PWM2_Pin */
   GPIO_InitStruct.Pin = GPIO_OUTPUT_Enable_MCU_Pin|GPIO_OUTPUT_Fan_PWM2_Pin;
@@ -576,6 +629,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIO_INPUT_MCU_HeatSinkTemp_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : GPIO_EXTI6_Tacho2_Pin */
+  GPIO_InitStruct.Pin = GPIO_EXTI6_Tacho2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIO_EXTI6_Tacho2_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : GPIO_OUTPUT_Relay_AC_Pin PC8 */
   GPIO_InitStruct.Pin = GPIO_OUTPUT_Relay_AC_Pin|GPIO_PIN_8;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -588,6 +647,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIO_INPUT_MCU_DCLINK_OK_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 

@@ -54,13 +54,15 @@
 /* USER CODE BEGIN 0 */
 uint8_t index_usart,cn2,cn3, rcv_flg;
 extern unsigned char state;
-extern uint8_t sent_data[16], buffer_usart[20], rec_D[1];
+extern uint8_t sent_data[16], buffer_usart2[20], rec_D[1],cn1;
+extern uint16_t tacho2,Fan_Timer,Fan_Timer_Enable,tacho2_Backup,tacho2_Disable,Usart_Counter,Com_Failure;
 
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
 extern DAC_HandleTypeDef hdac1;
+extern TIM_HandleTypeDef htim1;
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim6;
 
@@ -94,6 +96,71 @@ void DMA1_Channel1_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_EXTI6_Tacho2_Pin);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+	tacho2=tacho2+1;
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM1 update and TIM16 interrupts.
+  */
+void TIM1_UP_TIM16_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
+
+  /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim1);
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
+	htim1.Instance->CNT=0;
+	cn1++;
+	
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_8);			// MCU Status LED
+	
+	if (Usart_Counter==0)											// Communication failed
+		Com_Failure = 1;
+	else
+		Com_Failure = 0;
+	
+	Usart_Counter=0;
+	
+	if (Fan_Timer_Enable==1)
+		Fan_Timer=Fan_Timer+1;
+	
+	if (tacho2_Backup<50)
+		tacho2_Disable=1;
+	else
+		tacho2_Disable=0;
+	
+	tacho2_Backup=tacho2;
+	tacho2=0;
+	
+	/*
+	if (tacho1_Disable==1)
+		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);					// Fan Status LED Off
+	else if ( (tacho1_Disable==0) & (tacho2_Disable==1) )
+		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);						// Fan Status LED On
+	else if ( (tacho1_Disable==0) & (tacho2_Disable==0) )
+		HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);												// Fan Status LED Toggle
+	*/
+	
+	/*
+	tacho1_Backup=tacho1;
+	tacho2_Backup=tacho2;
+  */
+
+  /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXT line 26.
   */
 void USART2_IRQHandler(void)
@@ -106,6 +173,8 @@ void USART2_IRQHandler(void)
 	
 	cn2++;
 	HAL_UART_Receive_IT(&huart2, (uint8_t *) rec_D, 1);
+	Usart_Counter++;
+
 	
 	switch (state)
 	{
@@ -129,7 +198,7 @@ void USART2_IRQHandler(void)
 		case 'D':
 			if (rec_D[0] != 0x04)
 			{
-				buffer_usart[index_usart] = rec_D[0];
+				buffer_usart2[index_usart] = rec_D[0];
 				index_usart++;
 			}
 			else if (rec_D[0] == 0x04)

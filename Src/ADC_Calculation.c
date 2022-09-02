@@ -13,7 +13,7 @@ uint32_t Nextion_Setpoint;
 uint32_t ADC0_Buffer_Sum;
 uint32_t Averaged_ADC0_Buffer;
 uint32_t Moving_Average_Buffer_Current;
-uint8_t ii, jj, kk, Avg_Cnt1, Avg_Cnt2, Avg_Cnt3, Enable_PFC, Hiccup, PFC_OK, DC_OK, TSW_PFC_Fan, PFC_OTP, FB_OTP, Quanch_Time_Flage, rec_D[1],cn1;
+uint8_t ii, jj, kk, Avg_Cnt1, Avg_Cnt2, Avg_Cnt3, Enable_PFC, TSW_PFC_Fan, PFC_OTP, rec_D[1],cn1;
 uint32_t ADC1_Buffer_Sum, Averaged_ADC1_Buffer, Moving_Average_Buffer_Voltage;
 uint32_t Pout=0;
 uint32_t Power_Buffer, Averaged_Power, Moving_Average_Power, Output_Power;

@@ -23,6 +23,7 @@
 #include "stm32f3xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <Sputter.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,8 +56,8 @@
 uint8_t index_usart,cn2,cn3, rcv_flg;
 extern unsigned char state;
 extern uint8_t sent_data[16], buffer_usart2[20], rec_D[1],cn1;
-extern uint16_t tacho2,Fan_Timer,Fan_Timer_Enable,tacho2_Backup,tacho2_Disable,Usart_Counter,Com_Failure;
-
+extern uint16_t tacho2,Fan_Timer,Fan_Timer_Enable,tacho2_Backup,Usart_Counter;
+extern FailureStatus_t failure_status;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -126,9 +127,9 @@ void TIM1_UP_TIM16_IRQHandler(void)
 	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_8);			// MCU Status LED
 	
 	if (Usart_Counter==0)											// Communication failed
-		Com_Failure = 1;
+		failure_status.Com_Failure = 1;
 	else
-		Com_Failure = 0;
+		failure_status.Com_Failure = 0;
 	
 	Usart_Counter=0;
 	
@@ -136,26 +137,12 @@ void TIM1_UP_TIM16_IRQHandler(void)
 		Fan_Timer=Fan_Timer+1;
 	
 	if (tacho2_Backup<50)
-		tacho2_Disable=1;
+		failure_status.tacho2_Disable=1;
 	else
-		tacho2_Disable=0;
+		failure_status.tacho2_Disable=0;
 	
 	tacho2_Backup=tacho2;
 	tacho2=0;
-	
-	/*
-	if (tacho1_Disable==1)
-		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);					// Fan Status LED Off
-	else if ( (tacho1_Disable==0) & (tacho2_Disable==1) )
-		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);						// Fan Status LED On
-	else if ( (tacho1_Disable==0) & (tacho2_Disable==0) )
-		HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);												// Fan Status LED Toggle
-	*/
-	
-	/*
-	tacho1_Backup=tacho1;
-	tacho2_Backup=tacho2;
-  */
 
   /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
 }

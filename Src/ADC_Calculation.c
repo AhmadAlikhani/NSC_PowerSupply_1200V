@@ -13,20 +13,20 @@ uint32_t Nextion_Setpoint;
 uint32_t ADC0_Buffer_Sum;
 uint32_t Averaged_ADC0_Buffer;
 uint32_t Moving_Average_Buffer_Current;
-uint8_t ii, jj, kk, Avg_Cnt1, Avg_Cnt2, Avg_Cnt3, Enable_PFC, TSW_PFC_Fan, PFC_OTP, rec_D[1],cn1;
+uint8_t jj, kk, Avg_Cnt1, Avg_Cnt2, Avg_Cnt3, Enable_PFC, TSW_PFC_Fan, PFC_OTP, rec_D[1],cn1;
 uint32_t ADC1_Buffer_Sum, Averaged_ADC1_Buffer, Moving_Average_Buffer_Voltage;
 uint32_t Pout=0;
 uint32_t Power_Buffer, Averaged_Power, Moving_Average_Power, Output_Power;
 float Iout_NotCalibrated;
 float Nextion_Current_IL300_Coefficient = 1;
 float Iout;
-float Current_Calibration_Coefficient = 0.28;//0.2086;
-float Current_Calibration_Offset = 2.0234;//1.1862;
+float Current_Calibration_Coefficient = 1;//0.2086;
+float Current_Calibration_Offset = 0;//1.1862;
 float Setpoint_Limit_Offset_C2 = 0;
 float Vout_NotCalibrated,Vout;
 float Nextion_Voltage_IL300_Coefficient = 1;
-float Voltage_Calibration_Coefficient = 0.4607;//0.4941;  //Volatge Read=(0.4941*ADC+4.5743)
-float Voltage_Calibration_Offset = 1.4988;//0.4988;//4.5743;
+float Voltage_Calibration_Coefficient = 1;//0.4941;  //Volatge Read=(0.4941*ADC+4.5743)
+float Voltage_Calibration_Offset = 0;//0.4988;//4.5743;
 float SP_Step=1;
 float kasra=0.1;
 float CC_Level_Calibration_Coefficient = 1;//2.4363;
@@ -53,8 +53,8 @@ void ADC_CaculationFunc(void)
 
 		//--------------------- Current ADC ---------------------//
 		ADC0_Buffer_Sum = 0;
-		for (ii=0;ii<50;ii++)
-			ADC0_Buffer_Sum = ADC0_Buffer_Sum + ADC_Buffer[2];
+		for (uint8_t i=0; i < 50 ; i++)
+			ADC0_Buffer_Sum = ADC0_Buffer_Sum + ADC_Buffer[1];
 		Averaged_ADC0_Buffer = ADC0_Buffer_Sum/50;
 		// Moving average filter //
 		Moving_Average_Buffer_Current = Moving_Average_Buffer_Current + Averaged_ADC0_Buffer;
@@ -80,8 +80,8 @@ void ADC_CaculationFunc(void)
 		//-------------------------------------------------------//
 		//--------------------- Voltage ADC ---------------------//
 		ADC1_Buffer_Sum = 0;
-		for (jj=0;jj<50;jj++)
-			ADC1_Buffer_Sum = ADC1_Buffer_Sum + ADC_Buffer[1];
+		for (uint8_t j = 0; j < 50; j++)
+			ADC1_Buffer_Sum = ADC1_Buffer_Sum + ADC_Buffer[0];
 		Averaged_ADC1_Buffer = ADC1_Buffer_Sum/50;
 		// Moving average filter //
 		Moving_Average_Buffer_Voltage = Moving_Average_Buffer_Voltage + Averaged_ADC1_Buffer;
@@ -110,9 +110,9 @@ void ADC_CaculationFunc(void)
 		Pout=Vout*Iout/1000;
 		//------ Power Filter ------//
 		Power_Buffer = 0;
-		for (kk=0;kk<50;kk++)
+		for (uint32_t i = 0 ; i < 20 ; i++)
 			Power_Buffer = Power_Buffer + Pout;
-		Averaged_Power = Power_Buffer/50;
+		Averaged_Power = Power_Buffer/20;
 		// Moving average filter //
 		Moving_Average_Power = Moving_Average_Power + Averaged_Power;
 		if (Avg_Cnt3==10)

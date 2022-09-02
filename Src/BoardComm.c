@@ -33,8 +33,8 @@ void BoardCommFunc(void)
 	  	uart_receiver(huart2, (void*)&hmi_config_data);
 
 		//---------- Calcultaion of Setpoint Limit ------------//
-		Setpoint_Limit_Current = (hmi_config_data.HMI_Current_Setpoint > 0) ? ((uint32_t)((hmi_config_data.HMI_Current_Setpoint * Setpoint_Limit_Coefficient_C) - Setpoint_Limit_Offset_C1)) : (0);
-		Setpoint_Limit_Voltage = (hmi_config_data.HMI_Voltage_Setpoint > 0) ? ((uint32_t)((hmi_config_data.HMI_Voltage_Setpoint * Setpoint_Limit_Coefficient_V) + Setpoint_Limit_Offset_V1)) : (0);
+		Setpoint_Limit_Current = (hmi_config_data.HMI_Current_Setpoint > 0) ? ((uint32_t)((hmi_config_data.HMI_Current_Setpoint))) : (0);
+		Setpoint_Limit_Voltage = (hmi_config_data.HMI_Voltage_Setpoint > 0) ? ((uint32_t)((hmi_config_data.HMI_Voltage_Setpoint))) : (0);
 
     osDelay(1);
   }

@@ -170,7 +170,7 @@ int main(void)
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 	ADC_Calibration_Factor = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
 	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, ADC_Calibration_Factor);
-	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) ADC_Buffer, 3);
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) ADC_Buffer, 4);
 	HAL_TIM_Base_Start_IT(&htim1);
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);							// DE/RE = 0 ----> ADM485 is in recieve mode
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_15,GPIO_PIN_SET);							// Disable PFC

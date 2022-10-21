@@ -9,6 +9,12 @@
 #include "uart_mgr.h"
 
 extern uint8_t buffer_usart2[24];
+uint8_t Control_Mode;
+float Setpoint_Limit_Offset_C1 = 0;//0.25;//0.4983;//0.2611;
+float Setpoint_Limit_Coefficient_C =1;//1.0286;//1.329;
+float Setpoint_Limit_Offset_V1 = 0;//1.6476;//0.5773;
+float Setpoint_Limit_Offset_V2 = 0;
+float Setpoint_Limit_Coefficient_V = 1;//0.6258;//0.6243;//0.5626; //DAC-SP=(Nextion-SP*0.5626P-1.5773)
 uint32_t Setpoint_Limit_Current;
 uint32_t Setpoint_Limit_Voltage;
 hmi_configuration_data_t hmi_config_data;

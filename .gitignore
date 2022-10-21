@@ -5,7 +5,3 @@
 */Debug/*
 *.su
 *.list
-.settings/language.settings.xml
-Debug/makefile
-Debug/NSC_PowerSupply_1200V.elf
-Debug/NSC_PowerSupply_1200V.map

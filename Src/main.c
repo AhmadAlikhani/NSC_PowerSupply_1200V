@@ -47,7 +47,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 CRC_HandleTypeDef hcrc;
@@ -91,11 +91,6 @@ const osThreadAttr_t ADC_Caculation__attributes = {
 
 uint32_t ADC_Calibration_Factor;
 uint32_t ADC_Buffer[5];
-
-
-//float kP=3, kI=0.01;
-//float kP=0.1, kI=0.001;
-///float kP=0.1, kI=0.0005;
 
 GPIO_PinState flag;
 /* USER CODE END PV */
@@ -175,7 +170,6 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);							// DE/RE = 0 ----> ADM485 is in recieve mode
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_15,GPIO_PIN_SET);							// Disable PFC
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);								// MCU active
-	
 	
 
   /* USER CODE END 2 */

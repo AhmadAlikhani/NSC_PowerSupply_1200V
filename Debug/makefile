@@ -64,8 +64,8 @@ all: main-build
 main-build: NSC_PowerSupply_1200V.elf secondary-outputs
 
 # Tool invocations
-NSC_PowerSupply_1200V.elf NSC_PowerSupply_1200V.map: $(OBJS) $(USER_OBJS) D:\ahmadalikhani_workspace\NSC_PowerSupply_1200V\STM32F334R8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "NSC_PowerSupply_1200V.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\ahmadalikhani_workspace\NSC_PowerSupply_1200V\STM32F334R8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NSC_PowerSupply_1200V.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+NSC_PowerSupply_1200V.elf NSC_PowerSupply_1200V.map: $(OBJS) $(USER_OBJS) E:\M.Mozaffari\21_Ongoing_Tasks\NSC_PowerSupply\NSC_PowerSupply_1200V\STM32F334R8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "NSC_PowerSupply_1200V.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\M.Mozaffari\21_Ongoing_Tasks\NSC_PowerSupply\NSC_PowerSupply_1200V\STM32F334R8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NSC_PowerSupply_1200V.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

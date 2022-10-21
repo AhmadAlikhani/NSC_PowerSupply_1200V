@@ -12,26 +12,15 @@
 extern hmi_configuration_data_t hmi_config_data;
 unsigned int Cnt_DC_OK=0, Cnt_PFC_OK=0, Cnt_PFC_OTP=0, Cnt_FB_OTP=0, Cnt_Hiccup=0, Cnt_Fan=0;
 unsigned char state='S';
-signed int Pout_Error, Pout_Total_Error, Pout_P, Pout_I,Pout_PID;
 uint16_t tacho2,Fan_Timer,Fan_Timer_Enable,tacho2_Backup,Usart_Counter,Com_Failure;
-uint32_t CC_Level;
-uint32_t CV_Level;
-uint32_t My_var;
 unsigned int Inrush_Cnt=0;
-float Setpoint,CC_Level_DAC;
-float Setpoint_v, SP_Step_v=1;
+float Setpoint, Setpoint_v, SP_Step, SP_Step_v=1;
 FailureStatus_t failure_status;
 FlagsStatus_t flags_status;
 extern uint32_t Setpoint_Limit_Current;
-extern float SP_Step;
 extern uint32_t Setpoint_Limit_Voltage;
-extern float Power_Setpoint;
 extern uint8_t Enable_PFC;
-extern uint8_t Control_Mode;
 extern uint8_t sent_data[16];
-extern float CC_Level_Calibration_Offset;
-extern float CC_Level_Calibration_Coefficient;
-extern float CC_Level_Calibration_Offset;
 
 extern DAC_HandleTypeDef hdac1;
 extern DAC_HandleTypeDef hdac2;
@@ -106,11 +95,6 @@ void SputterFunc(void)
 				Cnt_Hiccup=10;
 				Setpoint = 0;
 				Setpoint_v = 0;
-			}
-			if (Control_Mode!=0)
-			{
-				CC_Level_DAC=0;
-			  Cnt_Hiccup=0;
 			}
 		}
 		else
@@ -241,7 +225,7 @@ void SputterFunc(void)
 
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint32_t) Setpoint_v);
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (uint32_t) Setpoint);
-		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint32_t) ( (hmi_config_data.Arc_Level*CC_Level_Calibration_Coefficient)+CC_Level_Calibration_Offset) );//(Arc_Level/(Current_Calibration_Coefficient*Nextion_Current_IL300_Coefficient)));
+		HAL_DAC_SetValue(&hdac2, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint32_t) hmi_config_data.Arc_Level);
 		if(failure_status.Hiccup)
 		{
 			HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET);					// Disable Sputter

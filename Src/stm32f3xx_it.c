@@ -53,7 +53,7 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t index_usart,cn2,cn3, rcv_flg;
+uint8_t index_usart,cn2,cn3;
 extern unsigned char state;
 extern uint8_t sent_data[16], buffer_usart2[20], rec_D[1],cn1;
 extern uint16_t tacho2,Fan_Timer,Fan_Timer_Enable,tacho2_Backup,Usart_Counter;
@@ -196,7 +196,6 @@ void USART2_IRQHandler(void)
 				//HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_2);												// Communication LED
 				HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_8);												// Test LED
 
-				rcv_flg = 1;
 				state = 'S';
 			}
 		break;

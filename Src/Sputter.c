@@ -25,8 +25,6 @@ FlagsStatus_t flags_status;
 extern uint32_t Setpoint_Limit_Current;
 extern float SP_Step;
 extern uint32_t Setpoint_Limit_Voltage;
-extern float Power_Setpoint;
-extern uint8_t Enable_PFC;
 extern uint8_t Control_Mode;
 extern uint8_t sent_data[16];
 extern float CC_Level_Calibration_Offset;

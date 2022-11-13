@@ -9,30 +9,17 @@
 #include "stdint.h"
 
 uint8_t sent_data[16]={0x06,0x68,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30};
-uint32_t Nextion_Setpoint;
 uint32_t ADC0_Buffer_Sum;
 uint32_t Averaged_ADC0_Buffer;
 uint32_t Moving_Average_Buffer_Current;
-uint8_t jj, kk, Avg_Cnt1, Avg_Cnt2, Avg_Cnt3, Enable_PFC, TSW_PFC_Fan, PFC_OTP, rec_D[1],cn1;
+uint8_t  Avg_Cnt1, Avg_Cnt2, Avg_Cnt3, rec_D[1],cn1;
 uint32_t ADC1_Buffer_Sum, Averaged_ADC1_Buffer, Moving_Average_Buffer_Voltage;
 uint32_t Pout=0;
 uint32_t Power_Buffer, Averaged_Power, Moving_Average_Power, Output_Power;
 float Iout_NotCalibrated;
-float Nextion_Current_IL300_Coefficient = 1;
 float Iout;
-float Current_Calibration_Coefficient = 1;//0.2086;
-float Current_Calibration_Offset = 0;//1.1862;
-float Setpoint_Limit_Offset_C2 = 0;
 float Vout_NotCalibrated,Vout;
-float Nextion_Voltage_IL300_Coefficient = 1;
-float Voltage_Calibration_Coefficient = 1;//0.4941;  //Volatge Read=(0.4941*ADC+4.5743)
-float Voltage_Calibration_Offset = 0;//0.4988;//4.5743;
 float SP_Step=1;
-float kasra=0.1;
-float CC_Level_Calibration_Coefficient = 1;//2.4363;
-float CC_Level_Calibration_Offset = 0;//3.9607;
-float Power_Setpoint;
-float kP=0.1, kI=0.0001;
 char Read_Current[5], Read_Voltage[5];
 
 extern uint32_t ADC_Buffer[5];
@@ -61,11 +48,11 @@ void ADC_CaculationFunc(void)
 		if (Avg_Cnt1==10)
 		{
 			Iout_NotCalibrated = (uint32_t) ( ((Iout_NotCalibrated*9)+(Moving_Average_Buffer_Current/10))/10 );
-			Iout = (uint32_t)(Iout_NotCalibrated*Current_Calibration_Coefficient*Nextion_Current_IL300_Coefficient);
+			Iout = (uint32_t)(Iout_NotCalibrated);
 			Moving_Average_Buffer_Current = 0;
 			// Offset Calibration //
-			if (Iout-Current_Calibration_Offset>0)
-				Iout = Iout + Current_Calibration_Offset;
+			if (Iout- 0 >0)
+				Iout = Iout +  0 ;
 			else
 				Iout = 0;
 			////////////////////////
@@ -88,11 +75,11 @@ void ADC_CaculationFunc(void)
 		if (Avg_Cnt2==10)
 		{
 			Vout_NotCalibrated = (uint32_t) ( ((Vout_NotCalibrated*9)+(Moving_Average_Buffer_Voltage/10))/10 );
-			Vout = (uint32_t)(Vout_NotCalibrated*Voltage_Calibration_Coefficient*Nextion_Voltage_IL300_Coefficient);
+			Vout = (uint32_t)(Vout_NotCalibrated* 1 * 1 );
 			Moving_Average_Buffer_Voltage = 0;
 			// Offset Calibration //
-			if (Vout-Voltage_Calibration_Offset>0)
-				Vout = Vout + Voltage_Calibration_Offset;
+			if (Vout- 0 >0)
+				Vout = Vout +  0 ;
 			else
 				Vout = 0;
 			////////////////////////
